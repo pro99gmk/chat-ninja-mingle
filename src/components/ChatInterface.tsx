@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useChat } from "@/context/ChatContext";
 import MessageList from "./MessageList";
-import { Smile, Send, Image, X, MoreVertical } from "lucide-react";
+import { Smile, Send, Image, X, MoreVertical, ExternalLink } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 
 // Define common emojis
 const EMOJIS = [
@@ -22,7 +23,7 @@ const EMOJIS = [
 ];
 
 const ChatInterface = () => {
-  const { currentUser, partner, sendMessage, blockUser, disconnectChat } = useChat();
+  const { currentUser, partner, sendMessage, blockUser, disconnectChat, telegramBotUrl } = useChat();
   const [messageText, setMessageText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -69,6 +70,11 @@ const ChatInterface = () => {
     }
   };
 
+  const openTelegramBot = () => {
+    window.open(telegramBotUrl, '_blank');
+    toast.info("Opening Telegram bot chat");
+  };
+
   if (!partner) {
     return null;
   }
@@ -88,22 +94,33 @@ const ChatInterface = () => {
             </p>
           </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-5 w-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={disconnectChat}>
-              Disconnect
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleBlockUser} className="text-destructive">
-              Block User
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="flex items-center space-x-1"
+            onClick={openTelegramBot}
+          >
+            <ExternalLink className="h-4 w-4" /> 
+            <span>Open on Telegram</span>
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={disconnectChat}>
+                Disconnect
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleBlockUser} className="text-destructive">
+                Block User
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {/* Messages */}

@@ -26,6 +26,8 @@ interface ChatContextType {
   messages: Message[];
   blockedUsers: string[];
   isSearching: boolean;
+  telegramToken: string;
+  telegramBotUrl: string;
   login: (name: string, age: number, gender: Gender) => void;
   logout: () => void;
   sendMessage: (content: string, type: Message["type"], imageUrl?: string) => void;
@@ -65,6 +67,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [blockedUsers, setBlockedUsers] = useState<string[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+  
+  // Telegram integration
+  const telegramToken = "8136115997:AAH_opqyAyOaWLz2HN3_hzHPeha24Al2Nlk";
+  const telegramBotUrl = "http://t.me/Chat_world_random_bot/Chat";
 
   useEffect(() => {
     // Clean up the timeout when component unmounts
@@ -104,33 +110,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     setMessages((prev) => [...prev, newMessage]);
-
-    // Simulate partner response after a random delay
-    if (Math.random() > 0.3) {  // 70% chance to respond
-      const responseDelay = Math.floor(Math.random() * 3000) + 1000; // 1-4 seconds
-      setTimeout(() => {
-        const responses = [
-          "That's interesting!",
-          "Tell me more.",
-          "I see what you mean.",
-          "Haha, that's funny 😂",
-          "I'm not sure I understand...",
-          "Cool! 👍",
-          "What else do you enjoy?",
-          "I've never thought about it that way.",
-          "Oh really?",
-          "So what do you think about that?"
-        ];
-        const responseMessage: Message = {
-          id: generateId(),
-          senderId: partner.id,
-          content: responses[Math.floor(Math.random() * responses.length)],
-          timestamp: new Date(),
-          type: "text"
-        };
-        setMessages((prev) => [...prev, responseMessage]);
-      }, responseDelay);
-    }
+    
+    // No automatic bot responses anymore
   };
 
   const startSearch = () => {
@@ -145,7 +126,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsSearching(false);
         toast.success(`Connected with ${newPartner.name}!`);
         
-        // Add a welcome message from the partner
+        // Add a welcome message from the partner but don't add automatic messages after
         const welcomeMessage: Message = {
           id: generateId(),
           senderId: newPartner.id,
@@ -202,6 +183,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
         messages,
         blockedUsers,
         isSearching,
+        telegramToken,
+        telegramBotUrl,
         login,
         logout,
         sendMessage,

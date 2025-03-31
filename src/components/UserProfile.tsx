@@ -1,79 +1,82 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { useChat } from "@/context/ChatContext";
-import { LogOut, User, Shield } from "lucide-react";
 import BlockedUsers from "./BlockedUsers";
+import { ExternalLink } from "lucide-react";
 
 const UserProfile = ({ onChat }: { onChat: () => void }) => {
-  const { currentUser, logout } = useChat();
-  const [showBlockedUsers, setShowBlockedUsers] = useState(false);
+  const { currentUser, logout, blockedUsers, telegramBotUrl } = useChat();
+  const [showBlocked, setShowBlocked] = useState(false);
 
-  if (showBlockedUsers) {
-    return <BlockedUsers onBack={() => setShowBlockedUsers(false)} />;
+  const openTelegramBot = () => {
+    window.open(telegramBotUrl, '_blank');
+  };
+
+  if (showBlocked) {
+    return <BlockedUsers onBack={() => setShowBlocked(false)} />;
   }
+
+  if (!currentUser) return null;
 
   return (
     <Card className="w-full max-w-md shadow-lg">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">Your Profile</CardTitle>
-        <CardDescription className="text-center">
-          Your anonymous chat profile
-        </CardDescription>
+        <CardTitle className="text-2xl font-bold">Your Profile</CardTitle>
+        <CardDescription>Your anonymous chat identity</CardDescription>
       </CardHeader>
+
       <CardContent className="space-y-4">
-        <div className="mx-auto w-20 h-20 rounded-full bg-chat-primary flex items-center justify-center">
-          <User className="h-10 w-10 text-white" />
+        <div className="flex items-center justify-center">
+          <div className="h-24 w-24 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-center text-white text-3xl font-bold">
+            {currentUser.name.charAt(0).toUpperCase()}
+          </div>
         </div>
-        
+
+        <div className="space-y-2 text-center">
+          <h3 className="text-xl font-medium">{currentUser.name}</h3>
+          <p className="text-sm text-muted-foreground">
+            {currentUser.age} years old • {currentUser.gender.charAt(0).toUpperCase() + currentUser.gender.slice(1)}
+          </p>
+        </div>
+
+        <Button 
+          variant="outline" 
+          onClick={openTelegramBot} 
+          className="w-full flex items-center justify-center gap-2"
+        >
+          <ExternalLink className="h-4 w-4" />
+          Open in Telegram
+        </Button>
+
+        <Separator />
+
         <div className="space-y-4">
-          <div className="space-y-1">
-            <p className="text-sm font-medium text-center">Name</p>
-            <p className="text-center font-semibold">{currentUser?.name}</p>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-center">Age</p>
-              <p className="text-center font-semibold">{currentUser?.age}</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-center">Gender</p>
-              <p className="text-center font-semibold capitalize">{currentUser?.gender}</p>
-            </div>
-          </div>
-          
-          <div className="pt-4 space-y-2">
-            <Button 
-              className="w-full" 
-              variant="default"
-              onClick={onChat}
-            >
-              Find Chat Partner
-            </Button>
-            
-            <Button 
-              className="w-full" 
-              variant="outline"
-              onClick={() => setShowBlockedUsers(true)}
-            >
-              <Shield className="mr-2 h-4 w-4" />
-              Blocked Users
-            </Button>
-            
-            <Button 
-              className="w-full" 
-              variant="outline"
-              onClick={logout}
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Logout
-            </Button>
-          </div>
+          <Button 
+            onClick={onChat} 
+            className="w-full"
+          >
+            Find Random Chat Partner
+          </Button>
+
+          <Button 
+            variant="outline" 
+            onClick={() => setShowBlocked(true)} 
+            className="w-full"
+            disabled={blockedUsers.length === 0}
+          >
+            Blocked Users ({blockedUsers.length})
+          </Button>
         </div>
       </CardContent>
+
+      <CardFooter>
+        <Button variant="ghost" onClick={logout} className="w-full text-red-500 hover:text-red-700 hover:bg-red-50">
+          Logout
+        </Button>
+      </CardFooter>
     </Card>
   );
 };

@@ -5,6 +5,7 @@ import LoginForm from "@/components/LoginForm";
 import ChatInterface from "@/components/ChatInterface";
 import ChatSearch from "@/components/ChatSearch";
 import UserProfile from "@/components/UserProfile";
+import TelegramInfo from "@/components/TelegramInfo";
 import { Toaster } from "sonner";
 
 const ChatPage = () => {
@@ -13,7 +14,12 @@ const ChatPage = () => {
 
   // If user is not logged in, show login form
   if (!currentUser) {
-    return <LoginForm />;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-background">
+        <LoginForm />
+        <TelegramInfo />
+      </div>
+    );
   }
 
   // If user is logged in and in a chat, show chat interface
@@ -27,7 +33,7 @@ const ChatPage = () => {
 
   // If user is logged in but not in a chat, show profile or search
   return (
-    <div className="flex justify-center items-center min-h-screen bg-background">
+    <div className="flex flex-col justify-center items-center min-h-screen bg-background">
       {view === "profile" ? (
         <UserProfile onChat={() => setView("search")} />
       ) : (
