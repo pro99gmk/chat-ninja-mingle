@@ -1,13 +1,48 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from "react";
+import { useChat } from "@/context/ChatContext";
+import LoginForm from "@/components/LoginForm";
+import ChatInterface from "@/components/ChatInterface";
+import ChatSearch from "@/components/ChatSearch";
+import UserProfile from "@/components/UserProfile";
+import { Toaster } from "sonner";
+
+const ChatPage = () => {
+  const { currentUser, partner } = useChat();
+  const [view, setView] = useState<"profile" | "search">("profile");
+
+  // If user is not logged in, show login form
+  if (!currentUser) {
+    return <LoginForm />;
+  }
+
+  // If user is logged in and in a chat, show chat interface
+  if (partner) {
+    return (
+      <div className="fixed inset-0 flex flex-col">
+        <ChatInterface />
+      </div>
+    );
+  }
+
+  // If user is logged in but not in a chat, show profile or search
+  return (
+    <div className="flex justify-center items-center min-h-screen bg-background">
+      {view === "profile" ? (
+        <UserProfile onChat={() => setView("search")} />
+      ) : (
+        <ChatSearch />
+      )}
+    </div>
+  );
+};
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Toaster richColors position="top-center" />
+      <ChatPage />
+    </>
   );
 };
 
